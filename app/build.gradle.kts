@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.labscm20252_gr08"
+    namespace = "co.edu.udea.compumovil.gr08_20252.lab1"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.labscm20252_gr08"
+        applicationId = "co.edu.udea.compumovil.gr08_20252.lab1"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

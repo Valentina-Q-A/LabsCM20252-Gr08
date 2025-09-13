@@ -1,4 +1,4 @@
-package com.example.labscm20252_gr08.ui.theme
+package co.edu.udea.compumovil.gr08_20252.lab1.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun LabsCM20252Gr08Theme(
+fun MLabsCM20252Gr08Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

@@ -1,4 +1,4 @@
-package com.example.labscm20252_gr08
+package co.edu.udea.compumovil.gr08_20252.lab1
 
 import org.junit.Test
 

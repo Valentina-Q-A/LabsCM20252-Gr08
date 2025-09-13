@@ -1,4 +1,4 @@
-package com.example.labscm20252_gr08.ui.theme
+package co.edu.udea.compumovil.gr08_20252.lab1.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

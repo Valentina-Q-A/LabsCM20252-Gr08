@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,4 +57,16 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+    implementation("androidx.core:core-ktx:1.9.0") // O la versión más reciente
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") // O la versión más reciente
+    implementation("androidx.activity:activity-compose:1.8.0") // O la versión más reciente
+    implementation(platform("androidx.compose:compose-bom:2023.03.00")) // O la BOM más reciente
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material:material") // Para Material Design Components
+    implementation("androidx.compose.material:material-icons-core") // Para iconos básicos
+    // implementation("androidx.compose.material:material-icons-extended") // Descomenta si necesitas más iconos
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

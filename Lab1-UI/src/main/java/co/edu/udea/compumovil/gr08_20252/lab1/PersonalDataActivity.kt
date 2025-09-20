@@ -1,24 +1,34 @@
-import android.app.DatePickerDialog
-import android.widget.DatePicker
-import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import co.edu.udea.compumovil.gr08_20252.lab1.UserData
+import java.text.SimpleDateFormat
 import java.util.*
 
 // Definición del composable para toda la pantalla
 @Composable
-fun PersonalDataScreen() {
+fun PersonalDataScreen(
+    userData: UserData = UserData(),
+    onDataChange: (UserData) -> Unit = {},
+    onNextClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,36 +37,53 @@ fun PersonalDataScreen() {
     ) {
         // Título de la pantalla
         Text(text = "Información Personal", style = MaterialTheme.typography.h4)
-
         Spacer(modifier = Modifier.height(32.dp))
-
+        
         // Campo para Nombres
-        NameField()
+        NameField(
+            value = userData.firstName,
+            onValueChange = { onDataChange(userData.copy(firstName = it)) }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campo para Apellidos
-        LastNameField()
+        LastNameField(
+            value = userData.lastName,
+            onValueChange = { onDataChange(userData.copy(lastName = it)) }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campo para Sexo
-        GenderSelection()
+        GenderSelection(
+            selectedGender = userData.gender,
+            onGenderChange = { onDataChange(userData.copy(gender = it)) }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campo para Fecha de Nacimiento
-        DateOfBirthPicker()
+        DatePickerDocked(
+            selectedDate = userData.birthDate,
+            onDateChange = { onDataChange(userData.copy(birthDate = it)) }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campo para Grado de Escolaridad
-        EducationLevelSpinner()
+        EducationLevelSpinner(
+            selectedLevel = userData.educationLevel,
+            onLevelChange = { onDataChange(userData.copy(educationLevel = it)) }
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Botón de Siguiente
-        Button(onClick = { /* Lógica para continuar */ }) {
+        Button(
+            onClick = onNextClick,
+            enabled = userData.isPersonalDataComplete()
+        ) {
             Text(text = "Siguiente")
         }
     }
@@ -64,45 +91,53 @@ fun PersonalDataScreen() {
 
 // Campo de nombres
 @Composable
-fun NameField() {
-    var name by remember { mutableStateOf("") }
+fun NameField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     OutlinedTextField(
-        value = name,
-        onValueChange = { name = it },
+        value = value,
+        onValueChange = onValueChange,
         label = { Text("Nombres") },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
-            autoCorrect = false,
+            autoCorrectEnabled = false,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next
-        )
+        ),
+        singleLine = true
     )
 }
 
 // Campo de apellidos
 @Composable
-fun LastNameField() {
-    var lastName by remember { mutableStateOf("") }
+fun LastNameField(
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     OutlinedTextField(
-        value = lastName,
-        onValueChange = { lastName = it },
+        value = value,
+        onValueChange = onValueChange,
         label = { Text("Apellidos") },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
-            autoCorrect = false,
+            autoCorrectEnabled = false,
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next
-        )
+        ),
+        singleLine = true
     )
 }
 
 // Selección de sexo
 @Composable
-fun GenderSelection() {
+fun GenderSelection(
+    selectedGender: String,
+    onGenderChange: (String) -> Unit
+) {
     val genders = listOf("Hombre", "Mujer")
-    var selectedGender by remember { mutableStateOf(genders[0]) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -115,7 +150,7 @@ fun GenderSelection() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = (gender == selectedGender),
-                    onClick = { selectedGender = gender }
+                    onClick = { onGenderChange(gender) }
                 )
                 Text(text = gender)
                 Spacer(Modifier.width(8.dp))
@@ -124,43 +159,82 @@ fun GenderSelection() {
     }
 }
 
-// DatePicker funcional
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateOfBirthPicker() {
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
+fun DatePickerDocked(
+    selectedDate: String,
+    onDateChange: (String) -> Unit
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState()
 
-    var selectedDate by remember { mutableStateOf("") }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedDate,
+            onValueChange = { },
+            label = { Text("Fecha de Nacimiento") },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Select date"
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+        )
 
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
-            selectedDate = "%02d/%02d/%04d".format(selectedDay, selectedMonth + 1, selectedYear)
-        }, year, month, day
-    )
+        if (showDatePicker) {
+            Popup(
+                onDismissRequest = { showDatePicker = false },
+                alignment = Alignment.TopStart
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .offset(y = 64.dp)
+                        .shadow(elevation = 4.dp)
+                        .padding(16.dp),
+                    elevation = 4.dp
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        showModeToggle = false
+                    )
+                }
+            }
+        }
+    }
+    
+    // Actualizar automáticamente cuando se selecciona una fecha
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let { millis ->
+            onDateChange(convertMillisToDate(millis))
+            showDatePicker = false // Cerrar automáticamente
+        }
+    }
+}
 
-    OutlinedTextField(
-        value = if (selectedDate.isEmpty()) "" else selectedDate,
-        onValueChange = {},
-        label = { Text("Fecha de nacimiento") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { datePickerDialog.show() },
-        readOnly = true,
-        placeholder = { Text("Seleccione una fecha") }
-    )
+
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
 }
 
 // Spinner de escolaridad
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EducationLevelSpinner() {
+fun EducationLevelSpinner(
+    selectedLevel: String,
+    onLevelChange: (String) -> Unit
+) {
     val educationLevels = listOf("Primaria", "Secundaria", "Universitaria", "Otro")
     var expanded by remember { mutableStateOf(false) }
-    var selectedLevel by remember { mutableStateOf(educationLevels[0]) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -181,7 +255,7 @@ fun EducationLevelSpinner() {
             educationLevels.forEach { level ->
                 DropdownMenuItem(
                     onClick = {
-                        selectedLevel = level
+                        onLevelChange(level)
                         expanded = false
                     }
                 ) {

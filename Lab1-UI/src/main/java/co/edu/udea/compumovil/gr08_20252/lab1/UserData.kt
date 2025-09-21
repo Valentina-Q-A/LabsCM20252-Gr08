@@ -1,7 +1,5 @@
 package co.edu.udea.compumovil.gr08_20252.lab1
 
-import java.util.Date
-
 // Modelo de datos unificado para toda la información del usuario
 data class UserData(
     // Datos personales
@@ -38,14 +36,5 @@ data class UserData(
     fun getFullName(): String {
         return "$firstName $lastName".trim()
     }
-    
-    // Función para validar email
-    fun isValidEmail(): Boolean {
-        return email.contains("@") && email.contains(".")
-    }
-    
-    // Función para validar teléfono (básico)
-    fun isValidPhone(): Boolean {
-        return phone.length >= 7 && phone.all { it.isDigit() || it == '+' || it == '-' || it == ' ' }
-    }
+
 }

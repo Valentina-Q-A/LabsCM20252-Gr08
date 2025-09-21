@@ -1,24 +1,25 @@
-
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import co.edu.udea.compumovil.gr08_20252.lab1.UserData
+import co.edu.udea.compumovil.gr08_20252.lab1.rememberOrientationManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,15 +30,21 @@ fun PersonalDataScreen(
     onDataChange: (UserData) -> Unit = {},
     onNextClick: () -> Unit = {}
 ) {
+    val orientationManager = rememberOrientationManager()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(orientationManager.getScreenPadding()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Título de la pantalla
-        Text(text = "Información Personal", style = MaterialTheme.typography.h4)
-        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Información Personal", 
+            style = orientationManager.getTitleStyle()
+        )
+        Spacer(modifier = Modifier.height(orientationManager.getTitleSpacing()))
         
         // Campo para Nombres
         NameField(
@@ -45,7 +52,7 @@ fun PersonalDataScreen(
             onValueChange = { onDataChange(userData.copy(firstName = it)) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
 
         // Campo para Apellidos
         LastNameField(
@@ -53,7 +60,7 @@ fun PersonalDataScreen(
             onValueChange = { onDataChange(userData.copy(lastName = it)) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
 
         // Campo para Sexo
         GenderSelection(
@@ -61,15 +68,15 @@ fun PersonalDataScreen(
             onGenderChange = { onDataChange(userData.copy(gender = it)) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
 
         // Campo para Fecha de Nacimiento
-        DatePickerDocked(
+        DatePickerModal(
             selectedDate = userData.birthDate,
             onDateChange = { onDataChange(userData.copy(birthDate = it)) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
 
         // Campo para Grado de Escolaridad
         EducationLevelSpinner(
@@ -77,7 +84,7 @@ fun PersonalDataScreen(
             onLevelChange = { onDataChange(userData.copy(educationLevel = it)) }
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 2))
 
         // Botón de Siguiente
         Button(
@@ -161,61 +168,58 @@ fun GenderSelection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerDocked(
+fun DatePickerModal(
     selectedDate: String,
     onDateChange: (String) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            value = selectedDate,
-            onValueChange = { },
-            label = { Text("Fecha de Nacimiento") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = { showDatePicker = !showDatePicker }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select date"
-                    )
+    OutlinedTextField(
+        value = selectedDate,
+        onValueChange = { },
+        label = { Text("Fecha de Nacimiento") },
+        readOnly = true,
+        trailingIcon = {
+            IconButton(onClick = { showDatePicker = true }) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Selecciona fecha"
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            onDateChange(convertMillisToDate(millis))
+                        }
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-
-        if (showDatePicker) {
-            Popup(
-                onDismissRequest = { showDatePicker = false },
-                alignment = Alignment.TopStart
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = 64.dp)
-                        .shadow(elevation = 4.dp)
-                        .padding(16.dp),
-                    elevation = 4.dp
+            dismissButton = {
+                TextButton(
+                    onClick = { showDatePicker = false }
                 ) {
-                    DatePicker(
-                        state = datePickerState,
-                        showModeToggle = false
-                    )
+                    Text("Cancelar")
                 }
             }
-        }
-    }
-    
-    // Actualizar automáticamente cuando se selecciona una fecha
-    LaunchedEffect(datePickerState.selectedDateMillis) {
-        datePickerState.selectedDateMillis?.let { millis ->
-            onDateChange(convertMillisToDate(millis))
-            showDatePicker = false // Cerrar automáticamente
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false
+            )
         }
     }
 }

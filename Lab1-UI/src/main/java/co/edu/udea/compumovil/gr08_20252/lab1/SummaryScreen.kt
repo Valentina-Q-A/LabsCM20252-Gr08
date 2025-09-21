@@ -3,6 +3,7 @@ package co.edu.udea.compumovil.gr08_20252.lab1
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -22,22 +23,24 @@ fun SummaryScreen(
     onEditContactData: () -> Unit = {},
     onSaveData: () -> Unit = {}
 ) {
+    val orientationManager = rememberOrientationManager()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(orientationManager.getScreenPadding())
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Título
         Text(
             text = "Resumen de Datos",
-            style = MaterialTheme.typography.h4,
+            style = orientationManager.getTitleStyle(),
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getTitleSpacing()))
         
         // Icono de éxito
         Icon(
@@ -47,7 +50,7 @@ fun SummaryScreen(
             tint = MaterialTheme.colors.primary
         )
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getTitleSpacing()))
         
         // Información Personal
         Card(
@@ -55,7 +58,7 @@ fun SummaryScreen(
             elevation = 4.dp
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(orientationManager.getScreenPadding())
             ) {
                 Text(
                     text = "Información Personal",
@@ -63,14 +66,14 @@ fun SummaryScreen(
                     fontWeight = FontWeight.Bold
                 )
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 0.75f))
                 
                 DataRow("Nombre completo:", userData.getFullName())
                 DataRow("Sexo:", userData.gender)
                 DataRow("Fecha de nacimiento:", userData.birthDate)
                 DataRow("Grado de escolaridad:", userData.educationLevel)
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 0.75f))
                 
                 Button(
                     onClick = onEditPersonalData,
@@ -81,7 +84,7 @@ fun SummaryScreen(
             }
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getSectionSpacing()))
         
         // Información de Contacto
         Card(
@@ -89,7 +92,7 @@ fun SummaryScreen(
             elevation = 4.dp
         ) {
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(orientationManager.getScreenPadding())
             ) {
                 Text(
                     text = "Información de Contacto",
@@ -97,7 +100,7 @@ fun SummaryScreen(
                     fontWeight = FontWeight.Bold
                 )
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 0.75f))
                 
                 DataRow("Teléfono:", userData.phone)
                 DataRow("Correo electrónico:", userData.email)
@@ -105,7 +108,7 @@ fun SummaryScreen(
                 DataRow("Ciudad:", userData.city)
                 DataRow("Dirección:", userData.address)
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 0.75f))
                 
                 Button(
                     onClick = onEditContactData,
@@ -116,7 +119,7 @@ fun SummaryScreen(
             }
         }
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getTitleSpacing()))
         
         // Botón de Guardar
         Button(
@@ -133,7 +136,7 @@ fun SummaryScreen(
             )
         }
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
         
         // Información de validación
         if (userData.isPersonalDataComplete() && userData.isContactDataComplete()) {

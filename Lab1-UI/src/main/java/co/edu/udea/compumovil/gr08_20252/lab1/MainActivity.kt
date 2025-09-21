@@ -8,15 +8,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import co.edu.udea.compumovil.gr08_20252.lab1.ui.theme.MLabsCM20252Gr08Theme
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Forzar orientación portrait
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        
         enableEdgeToEdge()
         setContent {
             MLabsCM20252Gr08Theme {
@@ -30,39 +36,43 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppContent() {
-    val appState = rememberAppState()
+    val viewModel: UserDataViewModel = viewModel()
     
-    when (appState.currentScreen) {
+    when (viewModel.currentScreen) {
         Screen.PERSONAL_DATA -> {
             PersonalDataScreen(
-                userData = appState.userData,
-                onDataChange = appState.onUserDataChange,
+                userData = viewModel.userData,
+                onDataChange = { newData ->
+                    viewModel.updateUserData(newData)
+                },
                 onNextClick = {
-                    appState.onScreenChange(Screen.CONTACT_DATA)
+                    viewModel.navigateToNextScreen()
                 }
             )
         }
         Screen.CONTACT_DATA -> {
             ContactDataScreen(
-                userData = appState.userData,
-                onDataChange = appState.onUserDataChange,
+                userData = viewModel.userData,
+                onDataChange = { newData ->
+                    viewModel.updateUserData(newData)
+                },
                 onSaveClick = {
-                    appState.onScreenChange(Screen.SUMMARY)
+                    viewModel.navigateToNextScreen()
                 }
             )
         }
         Screen.SUMMARY -> {
             SummaryScreen(
-                userData = appState.userData,
+                userData = viewModel.userData,
                 onEditPersonalData = {
-                    appState.onScreenChange(Screen.PERSONAL_DATA)
+                    viewModel.navigateToScreen(Screen.PERSONAL_DATA)
                 },
                 onEditContactData = {
-                    appState.onScreenChange(Screen.CONTACT_DATA)
+                    viewModel.navigateToScreen(Screen.CONTACT_DATA)
                 },
                 onSaveData = {
-                    appState.onSaveData()
-                    // Aquí podrías mostrar un mensaje de éxito o navegar a otra pantalla
+                    // Loggear todos los datos finales
+                    viewModel.logAllData()
                 }
             )
         }

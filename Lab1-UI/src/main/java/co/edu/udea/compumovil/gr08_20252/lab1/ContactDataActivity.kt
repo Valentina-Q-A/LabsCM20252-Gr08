@@ -1,13 +1,16 @@
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import co.edu.udea.compumovil.gr08_20252.lab1.UserData
+import co.edu.udea.compumovil.gr08_20252.lab1.rememberOrientationManager
 
 @Composable
 fun ContactDataScreen(
@@ -15,14 +18,20 @@ fun ContactDataScreen(
     onDataChange: (UserData) -> Unit = {},
     onSaveClick: () -> Unit = {}
 ) {
+    val orientationManager = rememberOrientationManager()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .verticalScroll(rememberScrollState())
+            .padding(orientationManager.getScreenPadding()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Información de Contacto", style = MaterialTheme.typography.h4)
-        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = "Información de Contacto", 
+            style = orientationManager.getTitleStyle()
+        )
+        Spacer(modifier = Modifier.height(orientationManager.getTitleSpacing()))
         
         // Campos de entrada
         PhoneField(
@@ -30,35 +39,35 @@ fun ContactDataScreen(
             onValueChange = { onDataChange(userData.copy(phone = it)) }
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
         
         EmailField(
             value = userData.email,
             onValueChange = { onDataChange(userData.copy(email = it)) }
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
         
         CountryAutocomplete(
             value = userData.country,
             onValueChange = { onDataChange(userData.copy(country = it)) }
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
         
         CityAutocomplete(
             value = userData.city,
             onValueChange = { onDataChange(userData.copy(city = it)) }
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing()))
         
         AddressField(
             value = userData.address,
             onValueChange = { onDataChange(userData.copy(address = it)) }
         )
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(orientationManager.getElementSpacing() * 2))
         
         // Botón de Guardar
         Button(
@@ -112,9 +121,8 @@ fun AddressField(
         onValueChange = onValueChange,
         label = { Text("Dirección") },
         modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            autoCorrect = false
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None,
+            autoCorrectEnabled = false
         ),
         singleLine = true
     )

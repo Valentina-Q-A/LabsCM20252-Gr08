@@ -68,6 +68,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core") // Para iconos básicos
     // implementation("androidx.compose.material:material-icons-extended") // Descomenta si necesitas más iconos
     implementation("com.google.code.gson:gson:2.10.1") // Para serialización JSON
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0") // Para ViewModel con Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") // Para ViewModel
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

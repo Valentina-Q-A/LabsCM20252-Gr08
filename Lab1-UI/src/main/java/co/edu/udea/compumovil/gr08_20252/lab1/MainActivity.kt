@@ -1,7 +1,5 @@
 package co.edu.udea.compumovil.gr08_20252.lab1
 
-import ContactDataScreen
-import PersonalDataScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import co.edu.udea.compumovil.gr08_20252.lab1.ui.theme.MLabsCM20252Gr08Theme
+import co.edu.udea.compumovil.gr08_20252.lab1.ui.screens.*
+import co.edu.udea.compumovil.gr08_20252.lab1.ui.viewmodel.UserDataViewModel
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

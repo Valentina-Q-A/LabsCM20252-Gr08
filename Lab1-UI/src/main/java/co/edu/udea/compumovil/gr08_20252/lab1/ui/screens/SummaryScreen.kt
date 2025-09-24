@@ -1,4 +1,4 @@
-package co.edu.udea.compumovil.gr08_20252.lab1
+package co.edu.udea.compumovil.gr08_20252.lab1.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,9 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import co.edu.udea.compumovil.gr08_20252.lab1.data.model.UserData
+import co.edu.udea.compumovil.gr08_20252.lab1.ui.util.rememberOrientationManager
 
 @Composable
 fun SummaryScreen(
@@ -176,23 +177,4 @@ fun DataRow(label: String, value: String) {
             modifier = Modifier.weight(0.6f)
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SummaryScreenPreview() {
-    val sampleData = UserData(
-        firstName = "Juan",
-        lastName = "Pérez",
-        gender = "Hombre",
-        birthDate = "15/03/1990",
-        educationLevel = "Universitaria",
-        phone = "+57 300 123 4567",
-        email = "juan.perez@email.com",
-        country = "Colombia",
-        city = "Bogotá",
-        address = "Calle 123 #45-67"
-    )
-    
-    SummaryScreen(userData = sampleData)
 }

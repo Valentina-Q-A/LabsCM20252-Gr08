@@ -67,6 +67,12 @@ dependencies {
     implementation("androidx.compose.material:material") // Para Material Design Components
     implementation("androidx.compose.material:material-icons-core") // Para iconos básicos
     // implementation("androidx.compose.material:material-icons-extended") // Descomenta si necesitas más iconos
+    implementation("com.google.code.gson:gson:2.10.1") // Para serialización JSON
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0") // Para ViewModel con Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0") // Para ViewModel
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Para llamadas HTTP
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Para conversión JSON
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0") // Para logging HTTP
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

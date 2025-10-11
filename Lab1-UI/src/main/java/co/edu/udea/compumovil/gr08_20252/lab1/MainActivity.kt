@@ -5,25 +5,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import co.edu.udea.compumovil.gr08_20252.lab1.ui.theme.MLabsCM20252Gr08Theme
+import co.edu.udea.compumovil.gr08_20252.lab1.ui.screens.*
+import co.edu.udea.compumovil.gr08_20252.lab1.ui.viewmodel.UserDataViewModel
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Forzar orientación portrait
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        
         enableEdgeToEdge()
         setContent {
             MLabsCM20252Gr08Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Scaffold(modifier = Modifier.fillMaxSize()) {
+                    AppContent()
                 }
             }
         }
@@ -31,17 +35,47 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MLabsCM20252Gr08Theme {
-        Greeting("Android")
+fun AppContent() {
+    val viewModel: UserDataViewModel = viewModel()
+    
+    when (viewModel.currentScreen) {
+        Screen.PERSONAL_DATA -> {
+            PersonalDataScreen(
+                userData = viewModel.userData,
+                onDataChange = { newData ->
+                    viewModel.updateUserData(newData)
+                },
+                onNextClick = {
+                    viewModel.navigateToNextScreen()
+                }
+            )
+        }
+        Screen.CONTACT_DATA -> {
+            ContactDataScreen(
+                userData = viewModel.userData,
+                onDataChange = { newData ->
+                    viewModel.updateUserData(newData)
+                },
+                onSaveClick = {
+                    viewModel.navigateToNextScreen()
+                }
+            )
+        }
+        Screen.SUMMARY -> {
+            SummaryScreen(
+                userData = viewModel.userData,
+                onEditPersonalData = {
+                    viewModel.navigateToScreen(Screen.PERSONAL_DATA)
+                },
+                onEditContactData = {
+                    viewModel.navigateToScreen(Screen.CONTACT_DATA)
+                },
+                onSaveData = {
+                    // Loggear todos los datos finales
+                    viewModel.logAllData()
+                }
+            )
+        }
     }
 }
+
